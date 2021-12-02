@@ -31,4 +31,27 @@ pipeline {
 			}
 		}
 	}
+stage ('Checkout') {
+steps {
+git branch:'master', url: 'https://github.com/haziqmofe/3x03test.git'
+}
+}
+stage('Code Quality Check via SonarQube') {
+steps {
+script {
+def scannerHome = tool 'SonarQube';
+withSonarQubeEnv('SonarQube') {
+sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=OWSAP -
+Dsonar.sources=."
+}
+}
+}
+}
+}
+post {
+always {
+recordIssues enabledForFailure: true, tool: sonarQube()
+}
+}
+}
 }
